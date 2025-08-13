@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toolbox</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(120deg, #89f7fe, #66a6ff);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+            box-sizing: border-box;
+        }
+        h1 {
+            color: white;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .tiles {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            width: fit-content;
+        }
+        .tile {
+            background: white;
+            padding: 40px 20px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            cursor: pointer;
+            text-decoration: none;
+            color: #333;
+            transition: transform 0.2s, background 0.3s;
+        }
+        .tile:hover {
+            transform: scale(1.05);
+            background: #f4f4f4;
+        }
+    </style>
+</head>
+<body>
+    <h1>My Tools</h1>
+
+    <div class="tiles">
+        <a href="identify_number.html" class="tile">🎲 Identify Number</a>
+        <a href="#" class="tile">📅 Coming Soon</a>
+        <a href="#" class="tile">📊 Coming Soon</a>
+        <a href="#" class="tile">📝 Coming Soon</a>
+    </div>
+</body>
+</html>

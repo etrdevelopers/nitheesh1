@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Identify Number</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(120deg, #89f7fe, #66a6ff);
+            padding: 20px;
+			box-sizing: border-box;
+        }
+        .nav-link {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 1.3rem;
+        }
+        h1 {
+            font-size: 2rem;
+            text-align: center;
+            color: #fff;
+        }
+        .input-container {
+            display: flex;
+			flex-direction: column;
+            gap: 10px;
+            margin: 20px 0;
+            width: 100%;
+            max-width: 400px;
+        }
+        input {
+            flex: 1;
+            padding: 15px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 8px;
+            outline: none;
+        }
+        button {
+            padding: 15px;
+            background: #ff6f61;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+        button:hover {
+            background: #ff4b3e;
+        }
+        .card {
+            background: white;
+            color: #333;
+            font-size: 8rem;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            min-width: 200px;
+            text-align: center;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="nav-link">⬅ Back to Home</a>
+    <h1>Random Number Generator</h1>
+    <div class="input-container">
+        <input type="number" id="min" placeholder="Min">
+        <input type="number" id="max" placeholder="Max">
+        <button onclick="generateRandom()">🎲</button>
+    </div>
+
+    <div class="card" id="result">?</div>
+
+    <script>
+        function generateRandom() {
+            const min = parseInt(document.getElementById('min').value);
+            const max = parseInt(document.getElementById('max').value);
+
+            if (isNaN(min) || isNaN(max) || min > max) {
+                alert("Please enter valid min and max values.");
+                return;
+            }
+
+            const randomNum = Math.floor(Math.random() * (max - min + 1)) + min;
+            document.getElementById('result').textContent = randomNum;
+        }
+    </script>
+
+</body>
+</html>
