@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Learn Colors & Shapes</title>
+<style>
+  /* Reset & base */
+  body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        height: 100vh;
+        margin: 0;
+        background: linear-gradient(120deg, #89f7fe, #66a6ff);
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+  h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin: 0 0 15px;
+    text-align: center;
+    color: #fff;
+    user-select: none;
+  }
+
+  /* Shape display */
+  #shape-display {
+    margin: 10px 0 15px;
+    width: 60vw;
+    height: 60vw;
+    max-width: 300px;
+    max-height: 300px;
+    border-radius: 20px;
+    background: white;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+  }
+
+  svg {
+    width: 50vw;
+    height: 50vw;
+    max-width: 250px;
+    max-height: 250px;
+  }
+
+  /* Controls containers */
+  .selector-row {
+    display: flex;
+    gap: 15px;
+    overflow-x: auto;
+    padding-bottom: 5px;
+    width: 100%;
+    max-width: 90vw;
+    margin-top: 2rem;
+  }
+  .selector-row::-webkit-scrollbar {
+    height: 6px;
+  }
+  .selector-row::-webkit-scrollbar-thumb {
+    background-color: #666;
+    border-radius: 3px;
+  }
+
+  /* Color buttons */
+  .color-btn {
+    flex: 0 0 70px;
+    height: 70px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    cursor: pointer;
+    transition: border-color 0.3s;
+    user-select: none;
+  }
+  .color-btn.selected {
+    border-color: #fff;
+  }
+
+  /* Shapes buttons */
+  .shape-btn {
+    padding: 10px;
+    flex: 0 0 60px;
+    border-radius: 16px;
+    border: 3px solid transparent;
+    cursor: pointer;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.3s, background 0.3s;
+    user-select: none;
+  }
+  .shape-btn.selected {
+    border-color: #fff;
+    background: #3898ff;
+  }
+  .shape-svg {
+    width: 4rem;
+    height: 4rem;
+    pointer-events: none;
+  }
+
+  /* Mode buttons */
+  #mode-switch {
+    display: flex;
+    gap: 15px;
+    margin: 15px 0 10px;
+  }
+  .mode-btn {
+    flex: 1;
+    padding: 12px 0;
+    font-weight: 600;
+    font-size: 2rem;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    background: rgba(255 255 255 / 0.8);
+    color: #222;
+    user-select: none;
+    transition: background-color 0.3s;
+  }
+  .mode-btn.active {
+    background: #fff;
+    color: #0077ff;
+    box-shadow: 0 0 8px #0077ff;
+  }
+
+  /* Feedback */
+  #feedback {
+    display: none;
+    font-size: 1.25rem;
+    font-weight: 700;
+    min-height: 40px;
+    color: #fff;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.6);
+    user-select: none;
+    min-width: 240px;
+    text-align: center;
+  }
+
+  /* Responsive fix for scroll */
+  @media (hover: hover) {
+    .color-btn:hover:not(.selected),
+    .shape-btn:hover:not(.selected),
+    .mode-btn:hover:not(.active) {
+      background: rgba(255, 255, 255, 0.5);
+    }
+  }
+</style>
+<link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<a href="index.html" class="nav-link">⬅ Back to Home</a>
+<h1>Learn Colors &amp; Shapes</h1>
+
+<div id="shape-display" aria-live="polite" aria-atomic="true" aria-label="Displayed colored shape">
+  <!-- SVG shape inserted here -->
+</div>
+
+<div id="mode-switch" role="tablist" aria-label="Switch between Free Play and Game Mode">
+  <button class="mode-btn active" id="free-play-btn" role="tab" aria-selected="true" tabindex="0">Free Play</button>
+  <button class="mode-btn" id="game-mode-btn" role="tab" aria-selected="false" tabindex="-1">Game Mode</button>
+</div>
+
+<div class="selector-row" id="color-selector" aria-label="Choose a color" role="list">
+  <!-- Color buttons inserted here -->
+</div>
+
+<div class="selector-row" id="shape-selector" aria-label="Choose a shape" role="list">
+  <!-- Shape buttons inserted here -->
+</div>
+
+<div id="feedback" aria-live="assertive"></div>
+
+<script>
+  // Data for colors and shapes
+  const colors = [
+    { name: 'Red', code: 'red' },
+    { name: 'Blue', code: 'blue' },
+    { name: 'Green', code: 'green' },
+    { name: 'Yellow', code: 'yellow' },
+    { name: 'Purple', code: 'purple' },
+    { name: 'Orange', code: 'orange' }
+  ];
+
+  const shapes = [
+    {
+      name: 'Circle',
+      svg: '<circle cx="50" cy="50" r="40" />'
+    },
+    {
+      name: 'Triangle',
+      svg: '<polygon points="50,15 85,85 15,85" />'
+    },
+    {
+      name: 'Square',
+      svg: '<rect x="15" y="15" width="70" height="70" rx="12" ry="12" />'
+    },
+    {
+      name: 'Star',
+      svg: `<polygon points="50,10 61,39 92,39 66,59 76,90 50,70 24,90 34,59 8,39 39,39" />`
+    },
+    {
+      name: 'Hexagon',
+      svg: `<polygon points="50,10 80,30 80,70 50,90 20,70 20,30" />`
+    }
+  ];
+
+  // DOM elements
+  const colorSelector = document.getElementById('color-selector');
+  const shapeSelector = document.getElementById('shape-selector');
+  const shapeDisplay = document.getElementById('shape-display');
+  const feedback = document.getElementById('feedback');
+  const freePlayBtn = document.getElementById('free-play-btn');
+  const gameModeBtn = document.getElementById('game-mode-btn');
+
+  // State
+  let selectedColorIndex = 0;
+  let selectedShapeIndex = 0;
+  let mode = 'free'; // 'free' or 'game'
+  let currentChallenge = null; // { colorIndex, shapeIndex }
+
+  // Speech synthesis helper
+  function say(text) {
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel(); // Stop any ongoing speech
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'en-US';
+    speechSynthesis.speak(utterance);
+  }
+
+  // Create Color Buttons
+  function createColorButtons() {
+    colors.forEach((color, idx) => {
+      const btn = document.createElement('button');
+      btn.className = 'color-btn';
+      btn.style.backgroundColor = color.code;
+      btn.title = color.name;
+      btn.setAttribute('role', 'listitem');
+      btn.setAttribute('aria-label', color.name + ' color');
+      if (idx === selectedColorIndex) btn.classList.add('selected');
+      btn.addEventListener('click', () => {
+        selectedColorIndex = idx;
+        updateSelectionDisplay();
+        if (mode === 'game') checkAnswer();
+        if (mode === 'free') updateShapeDisplay();
+      });
+      colorSelector.appendChild(btn);
+    });
+  }
+
+  // Create Shape Buttons
+  function createShapeButtons() {
+    shapes.forEach((shape, idx) => {
+      const btn = document.createElement('button');
+      btn.className = 'shape-btn';
+      btn.title = shape.name;
+      btn.setAttribute('role', 'listitem');
+      btn.setAttribute('aria-label', shape.name);
+      if (idx === selectedShapeIndex) btn.classList.add('selected');
+      btn.innerHTML = `<svg class="shape-svg" viewBox="0 0 100 100" fill="currentColor" xmlns="http://www.w3.org/2000/svg">${shape.svg}</svg>`;
+      btn.addEventListener('click', () => {
+        selectedShapeIndex = idx;
+        updateSelectionDisplay();
+        if (mode === 'game') checkAnswer();
+        if (mode === 'free') updateShapeDisplay();
+      });
+      shapeSelector.appendChild(btn);
+    });
+  }
+
+  // Update highlighted selected buttons
+  function updateSelectionDisplay() {
+    // Color buttons
+    Array.from(colorSelector.children).forEach((btn, idx) => {
+      btn.classList.toggle('selected', idx === selectedColorIndex);
+    });
+    // Shape buttons
+    Array.from(shapeSelector.children).forEach((btn, idx) => {
+      btn.classList.toggle('selected', idx === selectedShapeIndex);
+    });
+  }
+
+  // Render the combined shape in display with selected color & shape
+  function updateShapeDisplay() {
+    const color = colors[selectedColorIndex].code;
+    const shapeName = shapes[selectedShapeIndex].name;
+    const colorName = colors[selectedColorIndex].name;
+
+    // Insert SVG with cursor:pointer so user knows it can be tapped
+    shapeDisplay.innerHTML = `<svg tabindex="0" role="img" aria-label="${colorName} ${shapeName}" style="cursor:pointer" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill="${color}" stroke="#222" stroke-width="3">${shapes[selectedShapeIndex].svg}</svg>`;
+
+    feedback.textContent = `${colorName} ${shapeName}`;
+    say(feedback.textContent);
+
+    // Add click or keyboard handler to replay speech on tap or Enter/Space
+    const svgEl = shapeDisplay.querySelector('svg');
+    svgEl.addEventListener('click', () => say(feedback.textContent));
+    svgEl.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        say(feedback.textContent);
+        }
+    });
+    }
+
+  // Setup game mode: pick random challenge and prompt user
+  function setupGame() {
+    // Random color and shape indices
+    currentChallenge = {
+      colorIndex: Math.floor(Math.random() * colors.length),
+      shapeIndex: Math.floor(Math.random() * shapes.length)
+    };
+    feedback.textContent = `Make a ${colors[currentChallenge.colorIndex].name} ${shapes[currentChallenge.shapeIndex].name}`;
+    say(feedback.textContent);
+    // Reset selections
+    selectedColorIndex = -1;
+    selectedShapeIndex = -1;
+    updateSelectionDisplay();
+    // Clear shape display
+    shapeDisplay.innerHTML = '';
+  }
+
+  // Check if selected combo matches challenge
+  function checkAnswer() {
+    if (selectedColorIndex === currentChallenge.colorIndex &&
+        selectedShapeIndex === currentChallenge.shapeIndex) {
+      feedback.textContent = '✅ Correct! Great job!';
+      say('Correct! Great job!');
+      updateShapeDisplayAfterCorrect();
+      setTimeout(() => {
+        setupGame();
+      }, 2500);
+    } else if (selectedColorIndex !== -1 && selectedShapeIndex !== -1) {
+      feedback.textContent = '❌ Try again!';
+      say('Try again!');
+    }
+  }
+
+  // Show shape display in game mode after correct answer
+  function updateShapeDisplayAfterCorrect() {
+    const color = colors[currentChallenge.colorIndex].code;
+    const shapeSvg = shapes[currentChallenge.shapeIndex].svg;
+    shapeDisplay.innerHTML = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill="${color}" stroke="#222" stroke-width="3">${shapeSvg}</svg>`;
+  }
+
+  // Mode switching
+  function setMode(newMode) {
+    mode = newMode;
+    if (mode === 'free') {
+      freePlayBtn.classList.add('active');
+      freePlayBtn.setAttribute('aria-selected', 'true');
+      freePlayBtn.tabIndex = 0;
+      gameModeBtn.classList.remove('active');
+      gameModeBtn.setAttribute('aria-selected', 'false');
+      gameModeBtn.tabIndex = -1;
+      // Set defaults for free play
+      selectedColorIndex = 0;
+      selectedShapeIndex = 0;
+      updateSelectionDisplay();
+      updateShapeDisplay();
+      feedback.textContent = '';
+    } else {
+      gameModeBtn.classList.add('active');
+      gameModeBtn.setAttribute('aria-selected', 'true');
+      gameModeBtn.tabIndex = 0;
+      freePlayBtn.classList.remove('active');
+      freePlayBtn.setAttribute('aria-selected', 'false');
+      freePlayBtn.tabIndex = -1;
+      setupGame();
+    }
+  }
+
+  // Event listeners for mode buttons
+  freePlayBtn.addEventListener('click', () => setMode('free'));
+  gameModeBtn.addEventListener('click', () => setMode('game'));
+
+  // Initialization
+  createColorButtons();
+  createShapeButtons();
+  setMode('free');
+</script>
+
+</body>
+</html>
